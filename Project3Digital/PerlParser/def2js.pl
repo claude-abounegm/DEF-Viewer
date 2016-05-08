@@ -8,7 +8,7 @@ my $dflag = 0;
 
 open(DATA, "<", "file.txt") or die "Couldn't open file file.txt, $!";
 
-print "var defJSON ={\n";
+print "var defJSON = {\n";
 
 my $pin_line = "";
 
@@ -22,7 +22,7 @@ while(<DATA>) {
 	}
 	elsif ($_ =~ /COMPONENTS/ && $cflag == 0) {
 		$cflag = 1;
-		print "\ncells:[";
+		print "\ncells: [";
 	}
 	elsif ($_ =~ /COMPONENTS/ && $cflag == 1) {
 		$cflag=0;
@@ -30,19 +30,19 @@ while(<DATA>) {
 	}
 	elsif ($cflag == 1) {
 		# - DFFSR_10 DFFSR + PLACED ( 80.0 100 ) FS ;
-   		$_ =~ m/\-\s+(\S+)\s+(\S+)[^\(]+\(\s+(\S+)\s+(\S+)/;
-   		print "{name:\"$1\", type:\"$2\",";
-   		print "x:$3, y:$4},\n"
-   }
-   elsif ($_ =~ /PINS/ && $pflag == 0){ 
+		$_ =~ m/\-\s+(\S+)\s+(\S+)[^\(]+\(\s+(\S+)\s+(\S+)/;
+		print "{ name:\"$1\", type:\"$2\",";
+		print "x:$3, y:$4 },\n"
+	}
+	elsif ($_ =~ /PINS/ && $pflag == 0){ 
 		$pflag = 1;
-		print "pins:[";
-   }
-   elsif ($_ =~ /PINS/ && $pflag == 1){
-   	$pflag = 0;
-   	print "],"
-   }
-   elsif($_ =~ /\;/ && $pflag == 1) {
+		print "pins: [";
+	}
+	elsif ($_ =~ /PINS/ && $pflag == 1){
+		$pflag = 0;
+		print "],"
+	}
+	elsif($_ =~ /\;/ && $pflag == 1) {
 		$pin_line = $pin_line . $_;
 		#print "$pin_line\n";
 		#- counter<4> + NET counter<4> + DIRECTION INPUT + USE SIGNAL    + LAYER metal2 ( -30 -30 ) ( 30 30 ) + FIXED ( 2397 30 ) N ;
