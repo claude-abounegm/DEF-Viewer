@@ -68,6 +68,8 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <Content Include="Scripts\jquery-2.2.3.min.map" />
+    <Content Include="PerlParser\def2js.pl" />
+    <Content Include="PerlParser\lef2js.pl" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
