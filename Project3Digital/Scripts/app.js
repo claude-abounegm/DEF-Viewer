@@ -50,16 +50,31 @@ $(function () {
                 .attr({ "fill": "#AAAAAA" });
             r.node.flag = 0;
             r.node.orgfill = "#AAAAAA";
+            //$(r.node).addClass(pin.layer);
 
-            r.node.onclick = function () {
-                if (this.flag == 0) {
-                    this.style.fill = '#10FF10';
-                    this.flag = 1;
-                } else {
-                    this.style.fill = this.orgfill;
-                    this.flag = 0;
-                }
-            }
+            //r.node.onclick = function () {
+            //    if (this.flag == 0) {
+            //        this.style.fill = '#10FF10';
+            //        this.flag = 1;
+            //    } else {
+            //        this.style.fill = this.orgfill;
+            //        this.flag = 0;
+            //    }
+            //}
+
+            r.node.onclick = (function () {
+                var current_pin = pin;
+
+                return function () {
+                    if (this.flag == 0) {
+                        this.style.fill = '#10FF10';
+                        this.flag = 1;
+                    } else {
+                        this.style.fill = this.orgfill;
+                        this.flag = 0;
+                    }
+                };
+            })();
 
             //else if(pin.layer=="metal2") paper.rect((pin.x+xOff+pin.x1)*wS, (pin.y+yOff+pin.y1)*hS, (pin.x2-pin.x1)*wS, (pin.y2-pin.y1)*hS).attr({"fill": "orange" });
             //else if(pin.layer=="metal3") paper.rect((pin.x+xOff+pin.x1)*wS, (pin.y+yOff+pin.y1)*hS, (pin.x2-pin.x1)*wS, (pin.y2-pin.y1)*hS).attr({"fill": "red" });

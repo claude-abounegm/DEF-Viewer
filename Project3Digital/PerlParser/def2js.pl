@@ -85,7 +85,7 @@ while(<DATA>) {
 }
 
 if($dflag == 0) {
-	print "die:{x1: 0, y1: 0, x2: 0, y2: 0}\n";
+	print "die: {x1: 0, y1: 0, x2: 0, y2: 0}\n";
 }
 
-print "}"
+print "}";
