@@ -4,8 +4,10 @@
 /// <reference path="raphael.js" />
 
 $(function () {
+    var paper;
+
     (function onLoaded() {
-        var paper = Raphael("canvas_container", 2000, 2000);
+        paper = Raphael("canvas_container", 2000, 2000);
         //rect1 = paper.rect(20,30,100,12).attr({fill: "orange"});
         drawDef();
     })();

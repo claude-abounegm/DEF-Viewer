@@ -85,6 +85,7 @@
     <Content Include="Scripts\raphael-min.js" />
     <Content Include="Scripts\raphael.js" />
     <Content Include="Scripts\scllef.js" />
+    <Content Include="Styles\stylesheet.css" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
