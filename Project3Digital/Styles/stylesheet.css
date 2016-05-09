@@ -1,3 +1,13 @@
-#canvas_container {
-    width: 500px;
+#types {
+    float: right;
+    position: relative;
+}
+
+.highlight {
+    /*fill: #10FF10;*/
+    fill: hotpink;
+}
+
+.hidden {
+    visibility: hidden;
 }

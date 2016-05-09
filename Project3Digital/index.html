@@ -5,13 +5,22 @@
     <meta charset="utf-8" />
 
     <link rel="stylesheet" href="Styles/stylesheet.css" />
+    <link href="Content/bootstrap.css" rel="stylesheet" />
 
 </head>
 <body>
-    <div id="canvas_container"></div>
+    <span id="canvas_container"></span>
+    <div id="types">
+        <span id="boxes"></span>
+        <span id="buttons">
+            <input type="button" id="showBtn" value="Show" />
+            <input type="button" id="hideBtn" value="Hide" />
+        </span>
+    </div>
 
     <!-- Load scripts last -->
     <script src="Scripts/jquery-2.2.3.js"></script>
+    <script src="Scripts/bootstrap.js"></script>
     <script src="Scripts/raphael.js"></script>
     <script src="Scripts/designdef.js"></script>
     <script src="Scripts/scllef.js"></script>
