@@ -64,23 +64,50 @@ while(<DATA>) {
 	elsif($pflag == 1){
 		$pin_line = $pin_line . $_;
 	}
-	elsif ($_ =~ /NETS/ && $nflag == 0) {
+	elsif ($_ =~ /^NETS/ && $nflag == 0) {
 		$nflag = 1;
 		print "\nnets:[";
 	}
-	elsif($_ =~ /NETS/ && $nflag == 1) {
+	elsif($_ =~ /^END NETS/ && $nflag == 1) {
 		$nflag = 0;
 		print "],\n";
 	}
 	elsif($_ =~ /-\s+(\S+)/ && $nflag == 1) {
-		print "{name:\"$1\",connections:[";
+		print "{name:\"$1\", connections: [";
+	}
+	elsif($_ =~ /(metal\d)/ && $nflag == 1) {
+	    if($_ =~ /\+\s+\S+\s+(metal\d)/) {
+            print "], routes: [\n";
+        }
+        
+        $x = "";
+        $y = "";
+        $via = "";
+        print "{layer: \"$1\", coords: [";
+        while($_ =~ /\(\s+(-?(?:\*|\d+))\s+(-?(?:\*|\d+))\s+\)\s+(\w+)?/g) {
+            if(index($1, "*") == -1) {
+                $x = "$1";
+            }
+            if(index($2, "*") == -1) {
+                $y = "$2";
+            }
+            
+            $via = $3;
+            print "{x: $x, y: $y},";
+        }
+        
+        print "]";
+        if($via) {
+            print ", via: \"$via\"";
+        }
+        print "},";
+        
+        if($_ =~ /\;/) {
+            print "]},";
+		}
 	}
 	elsif($_ =~ /\(\s+(\S+)\s+(\S+)\s+\)/ && $nflag == 1) {
 		print "{name: \"$1\", pin: \"$2\"},";
-		
-		if($_ =~ /\;/) {
-			print "]},\n";
-		}
 	}
 }
 

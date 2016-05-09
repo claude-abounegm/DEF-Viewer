@@ -5,6 +5,8 @@
 /// <reference path="bootstrap.js" />
 
 $(function () {
+    "use strict";
+
     var paper;
 
     (function onLoaded() {
@@ -63,7 +65,7 @@ $(function () {
             r.node.flag = 0;
             r.node.orgfill = "#AAAAAA";
             //$(r.node).addClass(pin.layer);
-            
+
             r.node.onclick = function () {
                 $(this).toggleClass("highlight");
             };
@@ -149,19 +151,24 @@ $(function () {
             //		paper.rect((x+xOff)*wS, (y+yOff)*hS, w*wS*100, h*hS*100).attr({"fill": "#AAAAFF" });
         }
 
-        for (var key in types) {
-            $("#types #boxes").append(
-                $("<span />")
-                .append($('<input />', {
-                    type: "checkbox",
-                    value: key
-                }).change(function () {
-                    $("." + $(this).val()).toggleClass("highlight", $(this).is(":checked"));
-                }))
-                .append(key)
-                .append("<br />")
-            );
-        }
+
+        Object
+            .keys(types)
+            .sort()
+            .forEach(function (key) {
+                $("#types #boxes").append(
+                    $("<span />")
+                    .append($('<input />', {
+                        type: "checkbox",
+                        value: key
+                    }).change(function () {
+
+                        $("." + $(this).val()).toggleClass("highlight", $(this).is(":checked"));
+                    }))
+                    .append(key)
+                    .append("<br />")
+                );
+            });
 
         $(document).on("click", "#showBtn, #hideBtn", function () {
             var hide = $(this).is("#hideBtn");
