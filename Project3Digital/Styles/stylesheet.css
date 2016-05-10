@@ -1,13 +1,61 @@
-#types {
+﻿#types {
     float: right;
     position: relative;
 }
 
 .highlight {
-    /*fill: #10FF10;*/
-    fill: hotpink;
 }
+
+    .highlight.pins {
+        fill: #10FF10 !important;
+    }
+
+    .highlight.cells {
+        fill: hotpink !important;
+    }
 
 .hidden {
     visibility: hidden;
+}
+
+.block_fill {
+    fill: #888888;
+}
+
+.block_dff {
+    fill: yellow;
+}
+
+.block_pin {
+    fill: #AAAAAA;
+}
+
+.block {
+    fill: #AAAAFF;
+}
+
+.die {
+    stroke-width: 1;
+    stroke: blue;
+    stroke-dasharray: 3,1;
+}
+
+#cellsContainer {
+    height: 220px;
+    overflow-y: scroll;
+}
+
+#pinsContainer {
+    height: 70px;
+    overflow-y: scroll;
+}
+
+#types {
+    border: 1px dashed;
+}
+
+#buttons {
+    text-align: center;
+    width: 100%;
+    border: none;
 }

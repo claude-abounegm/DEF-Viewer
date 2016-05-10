@@ -4,37 +4,49 @@
 /// <reference path="raphael.js" />
 /// <reference path="bootstrap.js" />
 
+// Extension to Raphael, to allow auto sizing of the SVG canvas.
+// Use after drawing all your textures.
+Raphael.prototype.fitToSize = function () {
+    var bbox = this.canvas.getBBox();
+    this.setSize(bbox.x + bbox.width, bbox.y + bbox.height);
+}
+
 $(function () {
     "use strict";
 
+    // this variable will be used throughout the code to draw
+    // to the canvas.
     var paper;
 
     (function onLoaded() {
-        paper = Raphael("canvas_container", 820, 600);
-        //rect1 = paper.rect(20,30,100,12).attr({fill: "orange"});
-        drawDef();
+        // initialize raphael with an initial width and height.
+        paper = Raphael("canvas_container", 500, 500);
 
-        var svg = document.getElementsByTagName("svg")[0];
-        var bbox = svg.getBBox();
-        svg.setAttribute("width", bbox.x + bbox.width + "px");
-        svg.setAttribute("height", bbox.y + bbox.height + "px");
+        // the main function to draw the DEF on screen.
+        drawDEF();
 
+        // automatically size the bounding box of the SVG
+        paper.fitToSize();
+
+        // initialize all popovers
         $('[data-toggle="popover"]').popover({
             container: "body",
             placement: "auto",
             html: true
         });
+
+        // this is used to toggle the arrow up and down in the accordion
+        function toggleChevron(e) {
+            $(e.target)
+                .prev('.panel-heading')
+                .find("i.indicator")
+                .toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+        }
+        $('#accordion').on('hidden.bs.collapse', toggleChevron);
+        $('#accordion').on('shown.bs.collapse', toggleChevron);
     })();
 
-    function findCell(name) {
-        for (var i = 0; i < lefJSON.cells.length; ++i)
-            if (name === lefJSON.cells[i].name)
-                return i;
-    }
-
-    function drawDef() {
-        // draw the die
-        // 1) get the dimentions to get a good scale
+    function drawDEF() {
         var w = defJSON.die.x2 - defJSON.die.x1;
         var h = defJSON.die.y2 - defJSON.die.y1;
         var wS = 1 * 800 / w;
@@ -42,105 +54,105 @@ $(function () {
         var xOff = 10 + Math.abs(defJSON.die.x1) * wS;
         var yOff = 10 + h * hS;
 
-        paper
+        // we first create the die around the cells
+        $(paper
             .rect((defJSON.die.x1 * wS + xOff), yOff - (h * hS + defJSON.die.y1 * hS), w * wS, h * hS)
-            .attr({ "stroke-width": 1, "stroke": 'blue', "stroke-dasharray": "-" });
-
-        //console.log(wS, hS, w, h, xOff, yOff, wS * w, hS * h);
+            .node)
+            .addClass("die");
 
         //paper.path("M"+xOff+","+yOff+"L"+xOff+",5");
         //paper.path("M"+xOff+","+yOff+"L"+(xOff+w*wS+5)+","+(5+yOff));
 
+        var pinTypes = { };
         for (var i = 0; i < defJSON.pins.length; ++i) {
             var pin = defJSON.pins[i];
+
             var px = xOff + pin.x * wS;
             var py = yOff - pin.y * hS;
-            var pw = wS * (pin.x2 - pin.x1) * 100; // remove 50
+            var pw = wS * (pin.x2 - pin.x1) * 100;
             var ph = hS * (pin.y2 - pin.y1) * 100;
             //if(pin.layer=="metal1")
 
-            var r = paper
+            var $node = $(paper
                 .rect(px + wS * pin.x1, py - hS * pin.y1, pw, ph)
-                .attr({ "fill": "#AAAAAA" });
-            r.node.flag = 0;
-            r.node.orgfill = "#AAAAAA";
-            //$(r.node).addClass(pin.layer);
+                .node);
 
-            r.node.onclick = function () {
+            // add the pins as well as one of the selectable types
+            pinTypes[pin.layer] = void 0;
+
+            $node
+                .addClass(pin.layer)
+                .addClass("pins")
+
+                // attributes related to the popover.
+                .attr("type", "button")
+                .attr("tabindex", "0")
+                .attr("data-toggle", "popover")
+                .attr("data-trigger", "click hover")
+                .attr("data-content", pin.name)
+                .attr("data-content", "Layer: " + pin.layer + "<br/>Name: " + pin.name);
+
+            $node.click(function () {
                 $(this).toggleClass("highlight");
-            };
-
-            //    (function () {
-            //    var current_pin = pin;
-
-            //    return function () {
-            //        if (this.flag == 0) {
-            //            this.style.fill = '#10FF10';
-            //            this.flag = 1;
-            //        } else {
-            //            this.style.fill = this.orgfill;
-            //            this.flag = 0;
-            //        }
-            //    };
-            //})();
+            });
 
             //else if(pin.layer=="metal2") paper.rect((pin.x+xOff+pin.x1)*wS, (pin.y+yOff+pin.y1)*hS, (pin.x2-pin.x1)*wS, (pin.y2-pin.y1)*hS).attr({"fill": "orange" });
             //else if(pin.layer=="metal3") paper.rect((pin.x+xOff+pin.x1)*wS, (pin.y+yOff+pin.y1)*hS, (pin.x2-pin.x1)*wS, (pin.y2-pin.y1)*hS).attr({"fill": "red" });
             //paper.text((pin.x+xOff)*wS, (pin.y+yOff)*hS, pin.name)
         }
 
-        var types = {};
+        var cellTypes = {};
         for (var i = 0; i < defJSON.cells.length; ++i) {
-            var lid = defJSON.cells[i].type;
+            // type and name of the cell
+            var type = defJSON.cells[i].type;
             var name = defJSON.cells[i].name;
+
+            // coords of the cell
             var x = defJSON.cells[i].x;
             var y = defJSON.cells[i].y;
-            var w = lefJSON.cells[lid].w;
-            var h = lefJSON.cells[lid].h;
+            var w = lefJSON.cells[type].w;
+            var h = lefJSON.cells[type].h;
 
-            var r;
+            // get the jQuery node.
+            var $node = $(paper
+                .rect(xOff + x * wS, yOff - y * hS - h * hS * 100, w * wS * 100, h * hS * 100)
+                .node);
 
-            if (!types[lid]) {
-                types[lid] = void 0;
-            }
+            // we keep track of the unique types this way
+            cellTypes[type] = void 0;
 
-            if (lid == "FILL") {
-                r = paper
-                    .rect(xOff + x * wS, yOff - y * hS - h * hS * 100, w * wS * 100, h * hS * 100)
-                    .attr({ "fill": "#888888" });
-
-                r.node.flag = 0;
-                r.node.orgfill = "#888888";
+            // set different classes for different types of cells
+            if (type === "FILL") {
+                $node.toggleClass("block_fill", true);
             }
             else if (name.indexOf("DFF") > -1) {
-                r = paper
-                    .rect(xOff + x * wS, yOff - y * hS - h * hS * 100, w * wS * 100, h * hS * 100)
-                    .attr({ "fill": "yellow" });
-
-                r.node.flag = 0;
-                r.node.orgfill = "yellow";
+                $node.toggleClass("block_dff", true);
             }
             else {
-                r = paper
-                    .rect(xOff + x * wS, yOff - y * hS - h * hS * 100, w * wS * 100, h * hS * 100)
-                    .attr({ "fill": "#AAAAFF" });
-
-                r.node.flag = 0;
-                r.node.orgfill = "#AAAAFF";
+                $node.toggleClass("block", true);
             }
 
-            $(r.node)
-                .attr("class", lid)
+            // for each cell, we add its type as its class, so we can then
+            // select it later easily. For example, if several cells have a type
+            // of "INVX1", we can simply select all 1-input inverters with
+            // a css selector like ".INVX1".
+            $node
+                // just adding the class as explained above.
+                .addClass(type)
+                .addClass("cells")
+
+                // attributes related to the popover.
                 .attr("type", "button")
                 .attr("tabindex", "0")
                 .attr("data-toggle", "popover")
                 .attr("data-trigger", "click hover")
-                .attr("title", lid)
-                .attr("data-content", name);
+                .attr("data-content", "Type: " + type + "<br/>Name: " + name);
 
-            r.node.onclick = function () {
+            // clicking on the button highlights it once, then clicking
+            // again takes off the highlighting. 
+            $node.click(function () {
                 $(this).toggleClass("highlight");
-            }
+            });
 
             //if(defJSON.cells[i].type == "FILL")
             //	paper.rect((x+xOff)*wS, (y+yOff)*hS, w*wS*100, h*hS*100).attr({"fill": "#888888" });
@@ -151,31 +163,59 @@ $(function () {
             //		paper.rect((x+xOff)*wS, (y+yOff)*hS, w*wS*100, h*hS*100).attr({"fill": "#AAAAFF" });
         }
 
+        // for each array which contains the names of the pins and cells,
+        // we need to add them to the accordion. So we do that now.
+        (function () {
+            function AddCheckboxesToAccordion(arr, containerName) {
+                Object
+                    .keys(arr)
+                    .sort()
+                    .forEach(function (key) {
+                        $("#types #" + containerName)
+                        .append($("<label />")
+                        .append($('<input />', {
+                            type: "checkbox",
+                            value: key
+                        })
+                        .change(function () {
+                            var $this = $(this);
+                            $("." + $this.val()).toggleClass("highlight", $this.is(":checked"));
+                        }))
+                        .append(key))
+                        .append("<br/>");
+                    });
+            }
 
-        Object
-            .keys(types)
-            .sort()
-            .forEach(function (key) {
-                $("#types #boxes").append(
-                    $("<span />")
-                    .append($('<input />', {
-                        type: "checkbox",
-                        value: key
-                    }).change(function () {
+            AddCheckboxesToAccordion(cellTypes, "cellsContainer");
+            AddCheckboxesToAccordion(pinTypes, "pinsContainer");
+        })();
 
-                        $("." + $(this).val()).toggleClass("highlight", $(this).is(":checked"));
-                    }))
-                    .append(key)
-                    .append("<br />")
-                );
-            });
-
+        // we register an event handler with the show and hide buttons, to show/hide
+        // the selected cell types chosen from the checkboxes list.
         $(document).on("click", "#showBtn, #hideBtn", function () {
+            // if it is a hide button, then we need to set the hidden class on
+            // the matching cells checked with the checkboxes.
             var hide = $(this).is("#hideBtn");
 
+            // we loop through the checked checkboxes, and hide, or show whichever
+            // cell that matched the user's choice.
             $('#types input[type="checkbox"]:checked').each(function (index, element) {
                 $("." + $(this).val()).toggleClass("hidden", hide);
             });
         });
+
+        // we register the event handler of the clear button
+        $(document).on("click", "#clearBtn", function () {
+            $('#types input[type="checkbox"]:checked').prop("checked", false);
+            $("#canvas_container .hidden").toggleClass("hidden", false);
+            $("#canvas_container [aria-describedby]").click();
+            $("#canvas_container .highlight").toggleClass("highlight", false);
+        });
     }
+
+    //function findCell(name) {
+    //    for (var i = 0; i < lefJSON.cells.length; ++i)
+    //        if (name === lefJSON.cells[i].name)
+    //            return i;
+    //}
 });
