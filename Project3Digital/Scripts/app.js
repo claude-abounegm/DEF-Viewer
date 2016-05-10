@@ -14,11 +14,10 @@ Raphael.prototype.fitToSize = function () {
 $(function () {
     "use strict";
 
-    // this variable will be used throughout the code to draw
-    // to the canvas.
+    // the Raphael canvas variable
     var paper;
 
-    (function onLoaded() {
+    -function onLoaded() {
         // initialize raphael with an initial width and height.
         paper = Raphael("canvas_container", 500, 500);
 
@@ -36,16 +35,22 @@ $(function () {
         });
 
         // this is used to toggle the arrow up and down in the accordion
-        function toggleChevron(e) {
-            $(e.target)
-                .prev('.panel-heading')
-                .find("i.indicator")
-                .toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
-        }
-        $('#accordion').on('hidden.bs.collapse', toggleChevron);
-        $('#accordion').on('shown.bs.collapse', toggleChevron);
-    })();
+        var accordion = "#accordion";
+        -function (selector) {
+            function toggleChevron(e) {
+                $(e.target)
+                    .prev('.panel-heading')
+                    .find("i.indicator")
+                    .toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+            }
 
+            $(selector)
+                .on('hidden.bs.collapse shown.bs.collapse', toggleChevron);
+        }(accordion);
+    }();
+
+    // This is the function responsible for all the interaction between
+    // the user and the DEF.
     function drawDEF() {
         var w = defJSON.die.x2 - defJSON.die.x1;
         var h = defJSON.die.y2 - defJSON.die.y1;
@@ -62,6 +67,11 @@ $(function () {
 
         //paper.path("M"+xOff+","+yOff+"L"+xOff+",5");
         //paper.path("M"+xOff+","+yOff+"L"+(xOff+w*wS+5)+","+(5+yOff));
+
+        function onClick() {
+            var $this = $(this);
+            $this.toggleClass("highlight");
+        }
 
         var pinTypes = { };
         for (var i = 0; i < defJSON.pins.length; ++i) {
@@ -88,13 +98,11 @@ $(function () {
                 .attr("type", "button")
                 .attr("tabindex", "0")
                 .attr("data-toggle", "popover")
-                .attr("data-trigger", "click hover")
+                .attr("data-trigger", "hover")
                 .attr("data-content", pin.name)
                 .attr("data-content", "Layer: " + pin.layer + "<br/>Name: " + pin.name);
 
-            $node.click(function () {
-                $(this).toggleClass("highlight");
-            });
+            $node.click(onClick);
 
             //else if(pin.layer=="metal2") paper.rect((pin.x+xOff+pin.x1)*wS, (pin.y+yOff+pin.y1)*hS, (pin.x2-pin.x1)*wS, (pin.y2-pin.y1)*hS).attr({"fill": "orange" });
             //else if(pin.layer=="metal3") paper.rect((pin.x+xOff+pin.x1)*wS, (pin.y+yOff+pin.y1)*hS, (pin.x2-pin.x1)*wS, (pin.y2-pin.y1)*hS).attr({"fill": "red" });
@@ -145,14 +153,12 @@ $(function () {
                 .attr("type", "button")
                 .attr("tabindex", "0")
                 .attr("data-toggle", "popover")
-                .attr("data-trigger", "click hover")
+                .attr("data-trigger", "hover")
                 .attr("data-content", "Type: " + type + "<br/>Name: " + name);
 
             // clicking on the button highlights it once, then clicking
             // again takes off the highlighting. 
-            $node.click(function () {
-                $(this).toggleClass("highlight");
-            });
+            $node.click(onClick);
 
             //if(defJSON.cells[i].type == "FILL")
             //	paper.rect((x+xOff)*wS, (y+yOff)*hS, w*wS*100, h*hS*100).attr({"fill": "#888888" });
@@ -165,7 +171,7 @@ $(function () {
 
         // for each array which contains the names of the pins and cells,
         // we need to add them to the accordion. So we do that now.
-        (function () {
+        -function () {
             function AddCheckboxesToAccordion(arr, containerName) {
                 Object
                     .keys(arr)
@@ -188,7 +194,7 @@ $(function () {
 
             AddCheckboxesToAccordion(cellTypes, "cellsContainer");
             AddCheckboxesToAccordion(pinTypes, "pinsContainer");
-        })();
+        }();
 
         // we register an event handler with the show and hide buttons, to show/hide
         // the selected cell types chosen from the checkboxes list.
@@ -208,7 +214,7 @@ $(function () {
         $(document).on("click", "#clearBtn", function () {
             $('#types input[type="checkbox"]:checked').prop("checked", false);
             $("#canvas_container .hidden").toggleClass("hidden", false);
-            $("#canvas_container [aria-describedby]").click();
+            //$("#canvas_container [aria-describedby]").click();
             $("#canvas_container .highlight").toggleClass("highlight", false);
         });
     }
