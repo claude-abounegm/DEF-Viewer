@@ -103,15 +103,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="index.html" />
-    <Content Include="Scripts\app.js" />
-    <Content Include="Scripts\designdef.js" />
+    <Content Include="CustomScripts\main.js" />
+    <Content Include="CustomScripts\designdef.js" />
     <None Include="Scripts\jquery-2.2.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.2.3.js" />
     <Content Include="Scripts\jquery-2.2.3.min.js" />
     <Content Include="Scripts\jquery.rule.js" />
     <Content Include="Scripts\raphael-min.js" />
     <Content Include="Scripts\raphael.js" />
-    <Content Include="Scripts\scllef.js" />
+    <Content Include="CustomScripts\scllef.js" />
     <Content Include="Styles\stylesheet.css" />
     <Content Include="Web.config" />
   </ItemGroup>

@@ -1,10 +1,10 @@
-/// <reference path="scllef.js" />
-/// <reference path="designdef.js" />
 /// <reference path="jquery-2.2.3.js" />
 /// <reference path="raphael.js" />
 /// <reference path="bootstrap.js" />
 /// <reference path="bootstrap-colorpicker.js" />
 /// <reference path="jquery.rule.js" />
+/// <reference path="scllef.js" />
+/// <reference path="designdef.js" />
 
 // Extension to Raphael, to allow auto sizing of the SVG canvas.
 // Use after drawing all your textures.
@@ -81,11 +81,12 @@ $(function () {
     //    return "hotpink";
     //}
 
-    // http://blog.adamcole.ca/2011/11/simple-javascript-rainbow-color.html
+    // from: http://blog.adamcole.ca/2011/11/simple-javascript-rainbow-color.html
+    // This function generates vibrant, "evenly spaced" colours (i.e. no clustering). 
+    // This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
+    // Adam Cole, 2011-Sept-14
+    // HSV to RBG adapted from: http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
     function rainbow(numOfSteps, step) {
-        // This function generates vibrant, "evenly spaced" colours (i.e. no clustering). This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
-        // Adam Cole, 2011-Sept-14
-        // HSV to RBG adapted from: http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
         var r, g, b;
         var h = step / numOfSteps;
         var i = ~~(h * 6);
@@ -99,6 +100,7 @@ $(function () {
             case 4: r = f; g = 0; b = 1; break;
             case 5: r = 1; g = 0; b = q; break;
         }
+
         var c = "#" + ("00" + (~ ~(r * 255)).toString(16)).slice(-2) + ("00" + (~ ~(g * 255)).toString(16)).slice(-2) + ("00" + (~ ~(b * 255)).toString(16)).slice(-2);
         return (c);
     }
@@ -127,7 +129,7 @@ $(function () {
             $this.toggleClass("highlight");
         }
 
-        var pinTypes = { };
+        var pinTypes = {};
         for (var i = 0; i < defJSON.pins.length; ++i) {
             var pin = defJSON.pins[i];
 
@@ -215,8 +217,7 @@ $(function () {
                     $.rule('.highlight.' + key + ' {}').appendTo("#fanous");
 
                     // we set the default color
-                   // var color = getDefaultColorFor(key);
-
+                    // var color = getDefaultColorFor(key);
                     var color = rainbow(keys.length, index);
 
                     // template for the following jQuery disaster
