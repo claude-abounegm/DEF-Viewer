@@ -3,12 +3,14 @@
 /// <reference path="jquery-2.2.3.js" />
 /// <reference path="raphael.js" />
 /// <reference path="bootstrap.js" />
+/// <reference path="bootstrap-colorpicker.js" />
+/// <reference path="jquery.rule.js" />
 
 // Extension to Raphael, to allow auto sizing of the SVG canvas.
 // Use after drawing all your textures.
 Raphael.prototype.fitToSize = function () {
     var bbox = this.canvas.getBBox();
-    this.setSize(bbox.x + bbox.width+1, bbox.y + bbox.height+1);
+    this.setSize(bbox.x + bbox.width + 1, bbox.y + bbox.height + 1);
 }
 
 $(function () {
@@ -34,20 +36,72 @@ $(function () {
             html: true
         });
 
-        // this is used to toggle the arrow up and down in the accordion
-        var accordion = "#accordion";
-        -function (selector) {
-            function toggleChevron(e) {
-                $(e.target)
-                    .prev('.panel-heading')
-                    .find("i.indicator")
-                    .toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
-            }
+        // instantiate the color picker, with its 
+        $('.picker').each(function (index, element) {
+            var $this = $(this);
 
-            $(selector)
-                .on('hidden.bs.collapse shown.bs.collapse', toggleChevron);
-        }(accordion);
+            $this
+                .colorpicker()
+                // event to change CSS on color change.
+                .on("changeColor", function (e) {
+                    $.rule('.highlight.' + $this.data("name"), '#fanous').css("fill", e.color);
+                })
+                // we set the default value of the colorpicker after creating it
+                // to trigger the "changeColor" event. This sets the correct CSS
+                // fill color, so we can succesfully highlight the items afterwards.
+                .colorpicker('setValue', $this.data("color"));
+        });
+
+        // this is used to toggle the arrow up and down in the accordion
+        $("#accordion").on('hidden.bs.collapse shown.bs.collapse', function (e) {
+            $(e.target)
+                .prev('.panel-heading')
+                .find("i.indicator")
+                .toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+        });
     }();
+
+    // Gets the default highlight color for a specific type.
+    //function getDefaultColorFor(type) {
+    //    if (type === "FILL")
+    //        return "#888888";
+
+    //    if (type.indexOf("DFF") > -1)
+    //        return "yellow";
+
+    //    if (type.indexOf("metal1") > -1)
+    //        return "#10FF10";
+
+    //    if (type.indexOf("metal2") > -1)
+    //        return "orange";
+
+    //    if (type.indexOf("metal3") > -1)
+    //        return "red";
+
+    //    return "hotpink";
+    //}
+
+    // http://blog.adamcole.ca/2011/11/simple-javascript-rainbow-color.html
+    function rainbow(numOfSteps, step) {
+        // This function generates vibrant, "evenly spaced" colours (i.e. no clustering). This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
+        // Adam Cole, 2011-Sept-14
+        // HSV to RBG adapted from: http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
+        var r, g, b;
+        var h = step / numOfSteps;
+        var i = ~~(h * 6);
+        var f = h * 6 - i;
+        var q = 1 - f;
+        switch (i % 6) {
+            case 0: r = 1; g = f; b = 0; break;
+            case 1: r = q; g = 1; b = 0; break;
+            case 2: r = 0; g = 1; b = f; break;
+            case 3: r = 0; g = q; b = 1; break;
+            case 4: r = f; g = 0; b = 1; break;
+            case 5: r = 1; g = 0; b = q; break;
+        }
+        var c = "#" + ("00" + (~ ~(r * 255)).toString(16)).slice(-2) + ("00" + (~ ~(g * 255)).toString(16)).slice(-2) + ("00" + (~ ~(b * 255)).toString(16)).slice(-2);
+        return (c);
+    }
 
     // This is the function responsible for all the interaction between
     // the user and the DEF.
@@ -81,7 +135,6 @@ $(function () {
             var py = yOff - pin.y * hS;
             var pw = wS * (pin.x2 - pin.x1) * 100;
             var ph = hS * (pin.y2 - pin.y1) * 100;
-            //if(pin.layer=="metal1")
 
             var $node = $(paper
                 .rect(px + wS * pin.x1, py - hS * pin.y1, pw, ph)
@@ -104,8 +157,6 @@ $(function () {
 
             $node.click(onClick);
 
-            //else if(pin.layer=="metal2") paper.rect((pin.x+xOff+pin.x1)*wS, (pin.y+yOff+pin.y1)*hS, (pin.x2-pin.x1)*wS, (pin.y2-pin.y1)*hS).attr({"fill": "orange" });
-            //else if(pin.layer=="metal3") paper.rect((pin.x+xOff+pin.x1)*wS, (pin.y+yOff+pin.y1)*hS, (pin.x2-pin.x1)*wS, (pin.y2-pin.y1)*hS).attr({"fill": "red" });
             //paper.text((pin.x+xOff)*wS, (pin.y+yOff)*hS, pin.name)
         }
 
@@ -129,17 +180,6 @@ $(function () {
             // we keep track of the unique types this way
             cellTypes[type] = void 0;
 
-            // set different classes for different types of cells
-            if (type === "FILL") {
-                $node.toggleClass("block_fill", true);
-            }
-            else if (name.indexOf("DFF") > -1) {
-                $node.toggleClass("block_dff", true);
-            }
-            else {
-                $node.toggleClass("block", true);
-            }
-
             // for each cell, we add its type as its class, so we can then
             // select it later easily. For example, if several cells have a type
             // of "INVX1", we can simply select all 1-input inverters with
@@ -159,39 +199,61 @@ $(function () {
             // clicking on the button highlights it once, then clicking
             // again takes off the highlighting. 
             $node.click(onClick);
-
-            //if(defJSON.cells[i].type == "FILL")
-            //	paper.rect((x+xOff)*wS, (y+yOff)*hS, w*wS*100, h*hS*100).attr({"fill": "#888888" });
-            //else
-            //	if(defJSON.cells[i].name.indexOf("DFF") > -1)
-            //		paper.rect((x+xOff)*wS, (y+yOff)*hS, w*wS*100, h*hS*100).attr({"fill": "#FFAAAA" });
-            //	else
-            //		paper.rect((x+xOff)*wS, (y+yOff)*hS, w*wS*100, h*hS*100).attr({"fill": "#AAAAFF" });
         }
 
         // for each array which contains the names of the pins and cells,
         // we need to add them to the accordion. So we do that now.
         -function () {
             function AddCheckboxesToAccordion(arr, containerName) {
-                Object
+                var keys = Object
                     .keys(arr)
-                    .sort()
-                    .forEach(function (key) {
-                        $("#types #" + containerName)
-                        .append($("<label />")
-                        .append($('<input />', {
-                            type: "checkbox",
-                            value: key
-                        })
-                        .change(function () {
-                            var $this = $(this);
-                            $("." + $this.val()).toggleClass("highlight", $this.is(":checked"));
-                        }))
-                        .append(key))
-                        .append("<br/>");
-                    });
+                    .sort();
+
+                keys.forEach(function (key, index) {
+                    // we instantiate a new entry for each item, so when
+                    // they are hightlighted, they would have their own color.
+                    $.rule('.highlight.' + key + ' {}').appendTo("#fanous");
+
+                    // we set the default color
+                   // var color = getDefaultColorFor(key);
+
+                    var color = rainbow(keys.length, index);
+
+                    // template for the following jQuery disaster
+                    //<div>
+                    //    <label><input type="checkbox" value="{key}">{key}</label>
+                    //    <span class="picker" data-color="{color}" data-name="{key}">
+                    //        <span class="add-on"><i></i></span>
+                    //    </span>
+                    //</div>
+                    $("#types #" + containerName)
+                        .append($("<div />")
+                        .append(
+                            $("<label />")
+                            .append($('<input />', {
+                                type: "checkbox",
+                                value: key
+                            })
+
+                            // when the value of the checkbox changes, we want to highlight
+                            // or unhighlight the appropriate cells.
+                            .change(function () {
+                                var $this = $(this);
+                                $("." + $this.val()).toggleClass("highlight", $this.is(":checked"));
+                            }))
+                            .append(key)
+                        )
+                        .append(
+                            $('<span class="picker" />')
+                                .attr("data-color", color)
+                                .attr("data-name", key)
+                                .append('<span class="add-on"><i></i></span>')
+                        )
+                    );
+                });
             }
 
+            // We add the checkboxes in different accordions
             AddCheckboxesToAccordion(cellTypes, "cellsContainer");
             AddCheckboxesToAccordion(pinTypes, "pinsContainer");
         }();
@@ -214,14 +276,7 @@ $(function () {
         $(document).on("click", "#clearBtn", function () {
             $('#types input[type="checkbox"]:checked').prop("checked", false);
             $("#canvas_container .hidden").toggleClass("hidden", false);
-            //$("#canvas_container [aria-describedby]").click();
             $("#canvas_container .highlight").toggleClass("highlight", false);
         });
     }
-
-    //function findCell(name) {
-    //    for (var i = 0; i < lefJSON.cells.length; ++i)
-    //        if (name === lefJSON.cells[i].name)
-    //            return i;
-    //}
 });

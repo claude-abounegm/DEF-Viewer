@@ -3,42 +3,6 @@
     position: relative;
 }
 
-.cells, .pins {
-    fill: lightgray;
-}
-
-.highlight {
-}
-    .highlight.block {
-        fill: hotpink;
-    }
-
-    .highlight.block_pin {
-        fill: #AAAAAA;
-    }
-
-    .highlight.block_dff {
-        fill: yellow;
-    }
-
-    .highlight.block_fill {
-        fill: #888888;
-    }
-
-    .highlight.pins {
-        fill: #10FF10 !important;
-    }
-
-.hidden {
-    visibility: hidden;
-}
-
-.die {
-    stroke-width: 1;
-    stroke: blue;
-    stroke-dasharray: 3,1;
-}
-
 #cellsContainer {
     height: 220px;
     overflow-y: scroll;
@@ -57,4 +21,23 @@
     text-align: center;
     width: 100%;
     border: none;
+}
+
+.cells, .pins {
+    fill: lightgray;
+}
+
+.picker {
+    border: 1px solid black;
+    float: right;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.die {
+    stroke-width: 1;
+    stroke: blue;
+    stroke-dasharray: 3,1;
 }
