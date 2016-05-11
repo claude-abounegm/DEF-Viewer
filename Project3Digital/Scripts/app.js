@@ -8,7 +8,7 @@
 // Use after drawing all your textures.
 Raphael.prototype.fitToSize = function () {
     var bbox = this.canvas.getBBox();
-    this.setSize(bbox.x + bbox.width, bbox.y + bbox.height);
+    this.setSize(bbox.x + bbox.width+1, bbox.y + bbox.height+1);
 }
 
 $(function () {

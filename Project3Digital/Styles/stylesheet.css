@@ -3,35 +3,34 @@
     position: relative;
 }
 
+.cells, .pins {
+    fill: lightgray;
+}
+
 .highlight {
 }
+    .highlight.block {
+        fill: hotpink;
+    }
+
+    .highlight.block_pin {
+        fill: #AAAAAA;
+    }
+
+    .highlight.block_dff {
+        fill: yellow;
+    }
+
+    .highlight.block_fill {
+        fill: #888888;
+    }
 
     .highlight.pins {
         fill: #10FF10 !important;
     }
 
-    .highlight.cells {
-        fill: hotpink !important;
-    }
-
 .hidden {
     visibility: hidden;
-}
-
-.block_fill {
-    fill: #888888;
-}
-
-.block_dff {
-    fill: yellow;
-}
-
-.block_pin {
-    fill: #AAAAAA;
-}
-
-.block {
-    fill: #AAAAFF;
 }
 
 .die {
