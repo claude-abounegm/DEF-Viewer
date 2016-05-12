@@ -1,3 +1,13 @@
+/*
+* Project 3
+* Adapted from Dr. Shalan's previous code.
+*
+* Developed by:
+* Shady Fanous
+* Shehab Mohamed
+* Claude Abounegm
+*/
+
 /// <reference path="jquery-2.2.3.js" />
 /// <reference path="raphael.js" />
 /// <reference path="bootstrap.js" />
@@ -5,13 +15,6 @@
 /// <reference path="jquery.rule.js" />
 /// <reference path="scllef.js" />
 /// <reference path="designdef.js" />
-
-// Extension to Raphael, to allow auto sizing of the SVG canvas.
-// Use after drawing all your textures.
-Raphael.prototype.fitToSize = function () {
-    var bbox = this.canvas.getBBox();
-    this.setSize(bbox.x + bbox.width + 1, bbox.y + bbox.height + 1);
-}
 
 $(function () {
     "use strict";
@@ -44,7 +47,7 @@ $(function () {
                 .colorpicker()
                 // event to change CSS on color change.
                 .on("changeColor", function (e) {
-                    $.rule('.highlight.' + $this.data("name"), '#fanous').css("fill", e.color);
+                    $.rule('.highlight.' + $this.data("name"), '#customStyle').css("fill", e.color);
                 })
                 // we set the default value of the colorpicker after creating it
                 // to trigger the "changeColor" event. This sets the correct CSS
@@ -214,7 +217,7 @@ $(function () {
                 keys.forEach(function (key, index) {
                     // we instantiate a new entry for each item, so when
                     // they are hightlighted, they would have their own color.
-                    $.rule('.highlight.' + key + ' {}').appendTo("#fanous");
+                    $.rule('.highlight.' + key + ' {}').appendTo("#customStyle");
 
                     // we set the default color
                     // var color = getDefaultColorFor(key);
@@ -222,14 +225,15 @@ $(function () {
 
                     // template for the following jQuery disaster
                     //<div>
-                    //    <label><input type="checkbox" value="{key}">{key}</label>
+                    //    <label><input type="checkbox" value="{key}"><span> {key}</span></label>
                     //    <span class="picker" data-color="{color}" data-name="{key}">
                     //        <span class="add-on"><i></i></span>
                     //    </span>
                     //</div>
                     $("#types #" + containerName)
                         .append($("<div />")
-                        .append(
+                        .append( 
+                            // <label><input type="checkbox" value="{key}"></label>
                             $("<label />")
                             .append($('<input />', {
                                 type: "checkbox",
@@ -242,8 +246,14 @@ $(function () {
                                 var $this = $(this);
                                 $("." + $this.val()).toggleClass("highlight", $this.is(":checked"));
                             }))
-                            .append(key)
+                            
+                            // <span> {key}</span>
+                            .append("<span> " + key + "</span>")
                         )
+
+                        //    <span class="picker" data-color="{color}" data-name="{key}">
+                        //        <span class="add-on"><i></i></span>
+                        //    </span>
                         .append(
                             $('<span class="picker" />')
                                 .attr("data-color", color)

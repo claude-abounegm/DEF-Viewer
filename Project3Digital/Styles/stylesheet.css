@@ -17,6 +17,10 @@
     border: 1px dashed;
 }
 
+    #types div label span {
+        vertical-align: text-bottom;
+    }
+
 #buttons {
     text-align: center;
     width: 100%;
@@ -28,9 +32,12 @@
 }
 
 .picker {
-    border: 1px solid black;
     float: right;
 }
+
+    .picker > span {
+        border: 1px solid black;
+    }
 
 .hidden {
     visibility: hidden;
