@@ -13,6 +13,7 @@
 /// <reference path="bootstrap.js" />
 /// <reference path="bootstrap-colorpicker.js" />
 /// <reference path="jquery.rule.js" />
+/// <reference path="extensions.js" />
 /// <reference path="scllef.js" />
 /// <reference path="designdef.js" />
 

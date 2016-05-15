@@ -30,7 +30,7 @@ while(<DATA>) {
 	elsif ($cflag == 1) {
 		# - DFFSR_10 DFFSR + PLACED ( 80.0 100 ) FS ;
 		$_ =~ m/\-\s+(\S+)\s+(\S+)[^\(]+\(\s+(\S+)\s+(\S+)/;
-		print "{ name:\"$1\", type:\"$2\, x:$3, y:$4 },\n"
+		print "{ name:\"$1\", type:\"$2\", x:$3, y:$4 },\n"
 	}
 	elsif ($_ =~ /PINS/ && $pflag == 0) { 
 		$pflag = 1;
