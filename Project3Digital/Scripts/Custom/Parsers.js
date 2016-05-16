@@ -29,6 +29,10 @@
         }
     };
 
+    parsers.parseLEF = function (content) {
+
+    }
+
     parsers.parseDEF = function (content) {
         var retValue = {
             die: { x1: 0, y1: 0, x2: 0, y2: 0 },

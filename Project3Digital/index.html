@@ -10,8 +10,29 @@
     <style id="customStyle"></style>
 </head>
 <body>
-    <div class="container">
-        <input type="file" id="defInput" accept=".def" />
+    <div id="browseModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Browse for:</h4>
+                </div>
+                <div class="modal-body" style="text-align: center;">
+                    <span class="btn btn-default btn-file">
+                        DEF File<input type="file" id="defInput" accept=".def">
+                    </span>
+
+                    <span class="btn btn- btn-default btn-file disabled">
+                        LEF File<input disabled="disabled" type="file" id="lefInput" accept=".lef">
+                    </span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="submitBtn" disabled="disabled" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainContainer" class="container hidden">
         <div class="row">
             <div class="col-md-10" id="canvas_container"></div>
             <br />

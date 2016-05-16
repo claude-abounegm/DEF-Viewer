@@ -26,14 +26,32 @@ $(function () {
     // the Raphael canvas variable
     var paper;
 
+    $('#browseModal').modal({
+        backdrop: 'static',
+        keyboard: false
+    });
+
     $(document).on('change', '#defInput', function () {
-        Parsers.readFileFromInput(this, function (data) {
+        $(this)
+            .parent('span')
+            .removeClass('btn-default')
+            .addClass('btn-success');
+
+        $('#submitBtn').removeAttr('disabled');
+    });
+
+    $(document).on('click', '#submitBtn', function () {
+        //lefJSON = Parsers.parseLEF();
+        Parsers.readFileFromInput($('#defInput')[0], function (data) {
             defJSON = Parsers.parseDEF(data);
-            onLoaded();
+            $('#browseModal').modal('hide');
+            $('#mainContainer').removeClass('hidden');
+
+            loadAll();
         });
     });
 
-    function onLoaded() {
+    function loadAll() {
         // initialize raphael with an initial width and height.
         paper = Raphael("canvas_container", 500, 500);
 
@@ -227,7 +245,13 @@ $(function () {
                     .keys(arr)
                     .sort();
 
+                if (keys.length == 0) {
+                    $('#' + containerName).parents('.panel').addClass('hidden');
+                    return;
+                }
+
                 var names = keys;
+                if (!colorType) colorType = 'fill';
                 if(fn) names = names.map(fn);
 
                 keys.forEach(function (key, index) {
@@ -282,8 +306,8 @@ $(function () {
             }
 
             // We add the checkboxes in different accordions
-            AddCheckboxesToAccordion(cellTypes, "cellsContainer", 'fill');
-            AddCheckboxesToAccordion(pinTypes, "pinsContainer", 'fill');
+            AddCheckboxesToAccordion(cellTypes, "cellsContainer");
+            AddCheckboxesToAccordion(pinTypes, "pinsContainer");
             AddCheckboxesToAccordion(netsTypes, "netsContainer", 'stroke', function (a) { return a.substring(1, a.length); });
         }();
 
@@ -309,7 +333,12 @@ $(function () {
         });
 
         $(document).on('click', "#clkTreeBtn", function () {
-            $('.clkTree').toggleClass('highlightc');
-        });
+            var flag = false;
+
+            return function () {
+                flag = !flag;
+                $('.clkTree').toggleClass('highlight', flag);
+            };
+        }());
     }
 });
