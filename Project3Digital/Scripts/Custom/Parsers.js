@@ -30,7 +30,19 @@
     };
 
     parsers.parseLEF = function (content) {
+        throw new function NotImplementedException() {
+            this.message = 'This function has not yet been implemented.';
+            this.name = "NotImplementedException";
+        };
 
+        var retValue = {
+            fill_cell: '',
+            cells: {}
+        };
+
+        // DO THE PARSING
+
+        return retValue;
     }
 
     parsers.parseDEF = function (content) {
@@ -112,7 +124,7 @@
                             break;
                     }
 
-                    if (net.name.toLowerCase().indexOf('clk') != -1)
+                    if (/clk/i.test(net.name))
                         net.CLOCK = true;
                     nets.push(net);
                 });
