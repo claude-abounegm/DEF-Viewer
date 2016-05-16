@@ -11,6 +11,7 @@
 </head>
 <body>
     <div class="container">
+        <input type="file" id="defInput" accept=".def" />
         <div class="row">
             <div class="col-md-10" id="canvas_container"></div>
             <br />
@@ -28,7 +29,7 @@
                             <div id="cellsContainer" class="panel-body"></div>
                         </div>
                     </div>
-                    
+
                     <div class="panel panel-default">
                         <div class="panel-heading" role="button" data-toggle="collapse" href="#pinsAccordion" aria-expanded="true" aria-controls="pinsAccordion">
                             <h4 class="panel-title">
@@ -57,6 +58,10 @@
                             <button id="hideBtn" class="btn btn-sm btn-danger" type="button">Hide</button>
                             <button id="clearBtn" class="btn btn-sm btn-info" type="button">Clear</button>
                         </div>
+
+                        <div role="group" class="btn-group">
+                            <button id="clkTreeBtn" class="btn btn-info" type="button">Show/Hide Clock Tree</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -73,10 +78,9 @@
 
     <!-- Parsed JSON files. -->
     <script src="Scripts/Custom/scllef.js"></script>
-    <script src="Scripts/Custom/designdef.js"></script>
 
     <!-- Custom Scripts -->
-    <script src="Scripts/Custom/defParser.js"></script>
+    <script src="Scripts/Custom/Parsers.js"></script>
     <script src="Scripts/Custom/extensions.js"></script>
     <script src="Scripts/Custom/main.js"></script>
 </body>

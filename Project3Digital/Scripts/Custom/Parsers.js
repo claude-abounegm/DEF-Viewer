@@ -1,4 +1,8 @@
-﻿var parseDEF = function () {
+﻿var Parsers = function () {
+    "use strict";
+
+    var parsers = {};
+
     function parseRegex(regex, content, fn) {
         var ret = regex.exec(content);
         if (ret) {
@@ -7,9 +11,25 @@
         }
     }
 
-    return function (content) {
-        "use strict";
+    parsers.readFileFromInput = function (element, callback) {
+        var file = element.files[0];
 
+        if (file) {
+            // create a new file reader
+            var reader = new FileReader();
+
+            // the FileReader is asynchronous, so we set a callback function.
+            // when the reader reads
+            reader.onload = function (e) {
+                callback(e.target.result);
+            };
+
+            // actually read the file
+            reader.readAsText(file);
+        }
+    };
+
+    parsers.parseDEF = function (content) {
         var retValue = {
             die: { x1: 0, y1: 0, x2: 0, y2: 0 },
             cells: [],
@@ -24,7 +44,7 @@
         // DIEAREA
 
         // COMPONENTS
-        parseRegex(/COMPONENTS.+;((?:\n|.)+)END COMPONENTS/gm, content, function (matches) {
+        parseRegex(/COMPONENTS.+;((?:\r?\n|.)+)END COMPONENTS/gm, content, function (matches) {
             var cells = retValue.cells;
 
             var component = /\-\s+(\S+)\s+(\S+)[^\(]+\(\s+(\S+)\s+(\S+)/g;
@@ -35,10 +55,10 @@
         // COMPONENTS
 
         // PINS
-        parseRegex(/PINS.+;((?:\n|.)+)END PINS/gm, content, function (matches) {
+        parseRegex(/PINS.+;((?:\r?\n|.)+)END PINS/g, content, function (matches) {
             var pins = retValue.pins;
 
-            var component = /- .+ NET (\S+)\n  \+ LAYER (\S+) \( (\S+) (\S+) \) \( (\S+) (\S+) \)\n  \+ (?:PLACED|FIXED) \( (\S+) (\S+) \) (\w)/g;
+            var component = /- .+ NET (\S+)\r?\n  \+ LAYER (\S+) \( (\S+) (\S+) \) \( (\S+) (\S+) \)\r?\n  \+ (?:PLACED|FIXED) \( (\S+) (\S+) \) (\w)/g;
             while (parseRegex(component, matches[0], function (m) {
                 pins.push({ name: m[0], layer: m[1], x1: +m[2], y1: +m[3], x2: +m[4], y2: +m[5], x: +m[6], y: +m[7], ori: m[8] });
             }));
@@ -46,7 +66,7 @@
         // PINS
 
         // NETS
-        parseRegex(/^NETS.+;((?:.|\n)+)END NETS$/gm, content, function (matches) {
+        parseRegex(/^NETS.+;((?:.|\r?\n)+)END NETS$/gm, content, function (matches) {
             matches = matches[0].split(/\r?\n/);
 
             var nets = retValue.nets;
@@ -57,7 +77,7 @@
                     var routes = net.routes;
 
                     for (; i < matches.length; ++i) {
-                        var isRoute = parseRegex(/(metal\d)/, matches[i], function (m) {
+                        parseRegex(/(metal\d)/, matches[i], function (m) {
                             var route = { layer: m[0], coords: [] };
                             var coords = route.coords;
 
@@ -77,16 +97,19 @@
                             routes.push(route);
                         });
 
-                        if (!isRoute) {
-                            parseRegex(/\(\s+(\S+)\s+(\S+)\s+\)/g, matches[i], function (m) {
-                                connections.push({ name: m[0], pin: m[1] });
-                            });
-                        }
+                        parseRegex(/\(\s+(\S+)\s+(\S+)\s+\)/g, matches[i], function (m) {
+                            if (m[1] === 'CLK')
+                                net.CLOCK = true;
+
+                            connections.push({ name: m[0], pin: m[1] });
+                        });
 
                         if (/\;/.test(matches[i]))
                             break;
                     }
 
+                    if (net.name.toLowerCase().indexOf('clk') != -1)
+                        net.CLOCK = true;
                     nets.push(net);
                 });
             }
@@ -95,4 +118,6 @@
 
         return retValue;
     };
+
+    return parsers;
 }();

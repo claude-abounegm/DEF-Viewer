@@ -48,3 +48,7 @@
     stroke: blue;
     stroke-dasharray: 3,1;
 }
+
+.clkTree.highlightc {
+    stroke: yellow;
+}
