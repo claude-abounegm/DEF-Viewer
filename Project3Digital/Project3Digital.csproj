@@ -77,7 +77,7 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Scripts\Custom\def2json.js" />
+    <Content Include="Scripts\Custom\defParser.js" />
     <Content Include="Scripts\Custom\extensions.js" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="packages.config" />
@@ -96,7 +96,6 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
-    <Content Include="Scripts\sprintf.min.js.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -115,8 +114,9 @@
     <Content Include="Scripts\raphael-min.js" />
     <Content Include="Scripts\raphael.js" />
     <Content Include="Scripts\Custom\scllef.js" />
-    <Content Include="Scripts\sprintf.js" />
-    <Content Include="Scripts\sprintf.min.js" />
+    <Content Include="Scripts\underscore-min.js" />
+    <Content Include="Scripts\underscore-min.map.txt" />
+    <Content Include="Scripts\underscore.js" />
     <Content Include="Styles\stylesheet.css" />
     <Content Include="Web.config" />
   </ItemGroup>
