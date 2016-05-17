@@ -85,6 +85,7 @@
     <Content Include="Scripts\bootstrap-colorpicker.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\Custom\default_lef.js" />
     <Content Include="Scripts\jquery-2.2.3.min.map" />
     <Content Include="PerlParser\def2js.pl" />
     <Content Include="PerlParser\lef2js.pl" />
@@ -112,7 +113,6 @@
     <Content Include="Scripts\jquery.rule.js" />
     <Content Include="Scripts\raphael-min.js" />
     <Content Include="Scripts\raphael.js" />
-    <Content Include="Scripts\Custom\scllef.js" />
     <Content Include="Styles\stylesheet.css" />
     <Content Include="Web.config" />
   </ItemGroup>

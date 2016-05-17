@@ -1,5 +1,4 @@
 var lefJSON = {
-"fill_cell": "FILL",
 "cells":{
 	"FILL":{"w":1.600, "h":20.000},
 	"AND2X1":{"w":6.400, "h":20.000},

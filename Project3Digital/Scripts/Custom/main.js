@@ -8,7 +8,6 @@
 * Claude Abounegm
 */
 
-/// <reference path="scllef.js" />
 /// <reference path="extensions.js" />
 /// <reference path="Parsers.js" />
 
@@ -18,13 +17,10 @@
 /// <reference path="../bootstrap-colorpicker.js" />
 /// <reference path="../jquery.rule.js" />
 
-var defJSON;
+var defJSON, lefJSON;
 
 $(function () {
     "use strict";
-
-    // the Raphael canvas variable
-    var paper;
 
     $('#browseModal').modal({
         backdrop: 'static',
@@ -32,24 +28,61 @@ $(function () {
     });
 
     $(document).on('change', '#defInput', function () {
-        $(this)
-            .parent('span')
-            .removeClass('btn-default')
-            .addClass('btn-success');
+        if ($(this).val()) {
+            $(this)
+                .parent('span')
+                .removeClass('btn-default')
+                .addClass('btn-success');
 
-        $('#submitBtn').removeAttr('disabled');
+            $('#submitBtn').removeAttr('disabled');
+        }
     });
+
+    $(document).on('change', '#lefInput', function () {
+        if ($(this).val()) {
+            $(this).parent('span')
+                .removeClass('btn-warning')
+                .addClass('btn-success');
+        }
+    });
+
+    // post change as the page might have refreshed, but the browser
+    // still holds the data that the user previously chose.
+    $('#defInput').change();
+    $('#lefInput').change();
 
     $(document).on('click', '#submitBtn', function () {
-        //lefJSON = Parsers.parseLEF();
-        Parsers.readFileFromInput($('#defInput')[0], function (data) {
-            defJSON = Parsers.parseDEF(data);
-            $('#browseModal').modal('hide');
-            $('#mainContainer').removeClass('hidden');
+        var $defInput = $('#defInput');
+        var $lefInput = $('#lefInput');
 
-            loadAll();
+        if (!$defInput.val())
+            return false;
+
+        Parsers.readFileFromInput($defInput[0], function (data) {
+            defJSON = Parsers.parseDEF(data);
+            
+            function init() {
+                $('#title').html(/^(?:.+\\)*(\S+\.def)/.exec($defInput.val())[1]);
+                $('#browseModal').modal('hide');
+                $('#mainContainer').removeClass('hidden');
+                loadAll();
+            }
+
+            if ($lefInput.val()) {
+                Parsers.readFileFromInput($lefInput[0], function (data) {
+                    lefJSON = Parsers.parseLEF(data);
+
+                    $('#subtitle').html(/^(?:.+\\)*(\S+\.lef)/.exec($lefInput.val())[1]);
+                    init();
+                });
+            }
+            else
+                init();
         });
     });
+
+    // the Raphael canvas variable
+    var paper;
 
     function loadAll() {
         // initialize raphael with an initial width and height.

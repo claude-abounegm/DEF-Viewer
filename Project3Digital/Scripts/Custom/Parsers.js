@@ -30,17 +30,19 @@
     };
 
     parsers.parseLEF = function (content) {
-        throw new function NotImplementedException() {
-            this.message = 'This function has not yet been implemented.';
-            this.name = "NotImplementedException";
-        };
-
         var retValue = {
-            fill_cell: '',
             cells: {}
         };
 
-        // DO THE PARSING
+        var reg = /MACRO\s+(\S+)((?:.|\r?\n)+)END \1/g;
+        while (parseRegex(reg, content, function (m) {
+            var cell = retValue.cells[m[0]] = {};
+
+            parseRegex(/SIZE\s+(\S+)\s+BY\s+(\S+)/g, m[1], function (m) {
+                cell.w = +m[0];
+                cell.h = +m[1];
+        });
+        }));
 
         return retValue;
     }

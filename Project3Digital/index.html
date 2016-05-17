@@ -21,8 +21,8 @@
                         DEF File<input type="file" id="defInput" accept=".def">
                     </span>
 
-                    <span class="btn btn- btn-default btn-file disabled">
-                        LEF File<input disabled="disabled" type="file" id="lefInput" accept=".lef">
+                    <span class="btn btn-warning btn-file">
+                        LEF File<input type="file" id="lefInput" accept=".lef">
                     </span>
                 </div>
                 <div class="modal-footer">
@@ -34,13 +34,18 @@
 
     <div id="mainContainer" class="container hidden">
         <div class="row">
+            <div class="page-header">
+                <h1>DEF Viewer <small id="title"></small><small> | </small><small id="subtitle">default.lef</small></h1>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-10" id="canvas_container"></div>
-            <br />
-            <br />
             <div class="col-md-2" id="types">
-                <label>Cell and Pin types:</label>
+                
+                <div style="text-align: center;"><label>Cells, Pins &amp; Nets</label></div>
+
                 <div class="panel-group" id="accordion" role="tablist">
-                    <div class="panel panel-default">
+                    <div class="panel panel-primary">
                         <div class="panel-heading" role="button" data-toggle="collapse" href="#cellsAccordion" aria-expanded="true" aria-controls="cellsAccordion">
                             <h4 class="panel-title">
                                 <a> Cells</a><i class="indicator glyphicon glyphicon-chevron-up pull-right"></i>
@@ -51,7 +56,7 @@
                         </div>
                     </div>
 
-                    <div class="panel panel-default">
+                    <div class="panel panel-primary">
                         <div class="panel-heading" role="button" data-toggle="collapse" href="#pinsAccordion" aria-expanded="true" aria-controls="pinsAccordion">
                             <h4 class="panel-title">
                                 <a>Pins</a><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i>
@@ -62,7 +67,7 @@
                         </div>
                     </div>
 
-                    <div class="panel panel-default">
+                    <div class="panel panel-primary">
                         <div class="panel-heading" role="button" data-toggle="collapse" href="#netsAccordion" aria-expanded="true" aria-controls="netsAccordion">
                             <h4 class="panel-title">
                                 <a>Nets</a><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i>
@@ -79,9 +84,8 @@
                             <button id="hideBtn" class="btn btn-sm btn-danger" type="button">Hide</button>
                             <button id="clearBtn" class="btn btn-sm btn-info" type="button">Clear</button>
                         </div>
-
-                        <div role="group" class="btn-group">
-                            <button id="clkTreeBtn" class="btn btn-info" type="button">Show/Hide Clock Tree</button>
+                        <div role="group" class="row">
+                            <button id="clkTreeBtn" class="btn btn-sm btn-info" type="button">Show/Hide Clock Tree</button>
                         </div>
                     </div>
                 </div>
@@ -95,12 +99,9 @@
     <script src="Scripts/bootstrap-colorpicker.js"></script>
     <script src="Scripts/jquery.rule.js"></script>
     <script src="Scripts/raphael.js"></script>
-    <!--<script src="Scripts/underscore.js"></script>-->
-
-    <!-- Parsed JSON files. -->
-    <script src="Scripts/Custom/scllef.js"></script>
 
     <!-- Custom Scripts -->
+    <script src="Scripts/Custom/default_lef.js"></script>
     <script src="Scripts/Custom/Parsers.js"></script>
     <script src="Scripts/Custom/extensions.js"></script>
     <script src="Scripts/Custom/main.js"></script>
