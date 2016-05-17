@@ -14,7 +14,7 @@
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Browse for:</h4>
+                    <h4 class="modal-title">Please select your input files:</h4>
                 </div>
                 <div class="modal-body" style="text-align: center;">
                     <span class="btn btn-default btn-file">
@@ -22,10 +22,13 @@
                     </span>
 
                     <span class="btn btn-warning btn-file">
-                        LEF File<input type="file" id="lefInput" accept=".lef">
+                        * LEF File<input type="file" id="lefInput" accept=".lef">
                     </span>
-                </div>
+                    </div>
                 <div class="modal-footer">
+                    <div style="text-align: left; font-size: 10px;">
+                        * is optional; a default will be used if not supplied.
+                    </div>
                     <button type="button" id="submitBtn" disabled="disabled" class="btn btn-primary">Submit</button>
                 </div>
             </div>
@@ -41,7 +44,7 @@
         <div class="row">
             <div class="col-md-10" id="canvas_container"></div>
             <div class="col-md-2" id="types">
-                
+
                 <div style="text-align: center;"><label>Cells, Pins &amp; Nets</label></div>
 
                 <div class="panel-group" id="accordion" role="tablist">
