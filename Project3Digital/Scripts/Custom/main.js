@@ -370,6 +370,7 @@ $(function () {
 
             return function () {
                 flag = !flag;
+                $(this).children('span').html(flag ? 'Hide' : 'Show');
                 $('.clkTree').toggleClass('highlight', flag);
             };
         }());
