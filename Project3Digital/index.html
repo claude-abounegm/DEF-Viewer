@@ -10,6 +10,7 @@
     <style id="customStyle"></style>
 </head>
 <body>
+
     <div id="browseModal" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -35,60 +36,72 @@
         </div>
     </div>
 
-    <div id="mainContainer" class="container hidden">
-        <div class="row">
-            <div class="page-header">
-                <h1>DEF Viewer <small id="title"></small><small> | </small><small id="subtitle">default.lef</small></h1>
+    <div id="mainContainer" class="hidden">
+        <!--<div style="width: 200px; position: absolute; top: 100px; left: 100px; z-index: 2147483647;">
+            <div class="panel panel-default">
+                <div class="panel-body" style="cursor: move;">
+                    Panel content
+                </div>
+                <div class="panel-footer">Panel footer</div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-10" id="canvas_container"></div>
-            <div class="col-md-2" id="types">
+        </div>-->
 
-                <div style="text-align: center;"><label>Cells, Pins &amp; Nets</label></div>
+        <div class="container">
+            <div class="row">
+                <div class="page-header">
+                    <h1>DEF Viewer <small id="title"></small><small> | </small><small id="subtitle">default.lef</small></h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-10" id="canvas_container"></div>
+                <div class="col-md-2" id="types">
 
-                <div class="panel-group" id="accordion" role="tablist">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading" role="button" data-toggle="collapse" href="#cellsAccordion" aria-expanded="true" aria-controls="cellsAccordion">
-                            <h4 class="panel-title">
-                                <a> Cells</a><i class="indicator glyphicon glyphicon-chevron-up pull-right"></i>
-                            </h4>
-                        </div>
-                        <div id="cellsAccordion" class="panel-collapse collapse in" role="tabpanel">
-                            <div id="cellsContainer" class="panel-body"></div>
-                        </div>
-                    </div>
+                    <div style="text-align: center;"><label>Cells, Pins &amp; Nets</label></div>
 
-                    <div class="panel panel-primary">
-                        <div class="panel-heading" role="button" data-toggle="collapse" href="#pinsAccordion" aria-expanded="true" aria-controls="pinsAccordion">
-                            <h4 class="panel-title">
-                                <a>Pins</a><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i>
-                            </h4>
+                    <div class="panel-group" id="accordion" role="tablist">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading" role="button" data-toggle="collapse" href="#cellsAccordion" aria-expanded="true" aria-controls="cellsAccordion">
+                                <h4 class="panel-title">
+                                    <a> Cells</a><i class="indicator glyphicon glyphicon-chevron-up pull-right"></i>
+                                </h4>
+                            </div>
+                            <div id="cellsAccordion" class="panel-collapse collapse in" role="tabpanel">
+                                <div id="cellsContainer" class="panel-body"></div>
+                            </div>
                         </div>
-                        <div id="pinsAccordion" class="panel-collapse collapse" role="tabpanel">
-                            <div id="pinsContainer" class="panel-body"></div>
-                        </div>
-                    </div>
 
-                    <div class="panel panel-primary">
-                        <div class="panel-heading" role="button" data-toggle="collapse" href="#netsAccordion" aria-expanded="true" aria-controls="netsAccordion">
-                            <h4 class="panel-title">
-                                <a>Nets</a><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i>
-                            </h4>
+                        <div class="panel panel-primary">
+                            <div class="panel-heading" role="button" data-toggle="collapse" href="#pinsAccordion" aria-expanded="true" aria-controls="pinsAccordion">
+                                <h4 class="panel-title">
+                                    <a>Pins</a><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i>
+                                </h4>
+                            </div>
+                            <div id="pinsAccordion" class="panel-collapse collapse" role="tabpanel">
+                                <div id="pinsContainer" class="panel-body"></div>
+                            </div>
                         </div>
-                        <div id="netsAccordion" class="panel-collapse collapse" role="tabpanel">
-                            <div id="netsContainer" class="panel-body"></div>
-                        </div>
-                    </div>
 
-                    <div id="buttons" class="panel panel-default">
-                        <div role="group" class="btn-group">
-                            <button id="showBtn" class="btn btn-sm btn-success" type="button">Show</button>
-                            <button id="hideBtn" class="btn btn-sm btn-danger" type="button">Hide</button>
-                            <button id="clearBtn" class="btn btn-sm btn-info" type="button">Clear</button>
+                        <div class="panel panel-primary">
+                            <div class="panel-heading" role="button" data-toggle="collapse" href="#netsAccordion" aria-expanded="true" aria-controls="netsAccordion">
+                                <h4 class="panel-title">
+                                    <a>Nets</a><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i>
+                                </h4>
+                            </div>
+                            <div id="netsAccordion" class="panel-collapse collapse" role="tabpanel">
+                                <div id="netsContainer" class="panel-body"></div>
+                            </div>
                         </div>
-                        <div role="group" class="row">
-                            <button id="clkTreeBtn" class="btn btn-info" type="button"><span>Show</span> Clock Tree</button>
+
+                        <div id="buttons" class="panel panel-default">
+                            <div role="group" class="btn-group">
+                                <button id="showBtn" class="btn btn-sm btn-success" type="button">Show</button>
+                                <button id="hideBtn" class="btn btn-sm btn-danger" type="button">Hide</button>
+                                <button id="clearBtn" class="btn btn-sm btn-info" type="button">Clear</button>
+                            </div>
+                            <div role="group" class="row">
+                                <button id="clkTreeBtn" class="btn btn-info" type="button"><span>Show</span> Clock Tree</button>
+                                <button id="pdnBtn" class="btn btn-info" type="button">Power Distribution Lines</button>
+                            </div>
                         </div>
                     </div>
                 </div>

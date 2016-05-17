@@ -3,172 +3,59 @@
 * Adapted from Dr. Shalan's previous code.
 *
 * Developed by:
-* Shady Fanous
-* Shehab Mohamed
-* Claude Abounegm
+*  Shady Fanous
+*  Shehab Mohamed
+*  Claude Abounegm
 */
 
 /// <reference path="extensions.js" />
 /// <reference path="Parsers.js" />
 
 /// <reference path="../jquery-2.2.3.js" />
-/// <reference path="../raphael.js" />
 /// <reference path="../bootstrap.js" />
 /// <reference path="../bootstrap-colorpicker.js" />
 /// <reference path="../jquery.rule.js" />
+/// <reference path="../raphael.js" />
 
 var defJSON, lefJSON;
 
 $(function () {
     "use strict";
 
-    $('#browseModal').modal({
-        backdrop: 'static',
-        keyboard: false
-    });
-
-    $(document).on('change', '#defInput', function () {
-        if ($(this).val()) {
-            $(this)
-                .parent('span')
-                .removeClass('btn-default')
-                .addClass('btn-success');
-
-            $('#submitBtn').removeAttr('disabled');
-        }
-    });
-
-    $(document).on('change', '#lefInput', function () {
-        if ($(this).val()) {
-            $(this).parent('span')
-                .removeClass('btn-warning')
-                .addClass('btn-success');
-        }
-    });
-
-    // post change as the page might have refreshed, but the browser
-    // still holds the data that the user previously chose.
-    $('#defInput').change();
-    $('#lefInput').change();
-
-    $(document).on('click', '#submitBtn', function () {
-        var $defInput = $('#defInput');
-        var $lefInput = $('#lefInput');
-
-        if (!$defInput.val())
-            return false;
-
-        Parsers.readFileFromInput($defInput[0], function (data) {
-            defJSON = Parsers.parseDEF(data);
-            
-            function init() {
-                $('#title').html(/^(?:.+\\)*(\S+\.def)/.exec($defInput.val())[1]);
-                $('#browseModal').modal('hide');
-                $('#mainContainer').removeClass('hidden');
-                loadAll();
-            }
-
-            if ($lefInput.val()) {
-                Parsers.readFileFromInput($lefInput[0], function (data) {
-                    lefJSON = Parsers.parseLEF(data);
-
-                    $('#subtitle').html(/^(?:.+\\)*(\S+\.lef)/.exec($lefInput.val())[1]);
-                    init();
-                });
-            }
-            else
-                init();
-        });
-    });
-
     // the Raphael canvas variable
     var paper;
-
-    function loadAll() {
-        // initialize raphael with an initial width and height.
-        paper = Raphael("canvas_container", 500, 500);
-
-        // the main function to draw the DEF on screen.
-        drawDEF();
-
-        // automatically size the bounding box of the SVG
-        paper.fitToSize();
-
-        // initialize all popovers
-        $('[data-toggle="popover"]').popover({
-            container: "body",
-            placement: "auto",
-            html: true
-        });
-
-        // instantiate the color picker, with its 
-        $('.picker').each(function (index, element) {
-            var $this = $(this);
-
-            $this
-                .colorpicker()
-                // event to change CSS on color change.
-                .on("changeColor", function (e) {
-                    $.rule('.highlight.' + $this.data("name"), '#customStyle').css($this.data("ctype"), e.color);
-                })
-                // we set the default value of the colorpicker after creating it
-                // to trigger the "changeColor" event. This sets the correct CSS
-                // fill color, so we can succesfully highlight the items afterwards.
-                .colorpicker('setValue', $this.data("color"));
-        });
-
-        // this is used to toggle the arrow up and down in the accordion
-        $("#accordion").on('hidden.bs.collapse shown.bs.collapse', function (e) {
-            $(e.target)
-                .prev('.panel-heading')
-                .find("i.indicator")
-                .toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
-        });
-    };
-
-    // from: http://blog.adamcole.ca/2011/11/simple-javascript-rainbow-color.html
-    // This function generates vibrant, "evenly spaced" colours (i.e. no clustering). 
-    // This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
-    // Adam Cole, 2011-Sept-14
-    // HSV to RBG adapted from: http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript
-    function rainbow(numOfSteps, step) {
-        var r, g, b;
-        var h = step / numOfSteps;
-        var i = ~~(h * 6);
-        var f = h * 6 - i;
-        var q = 1 - f;
-        switch (i % 6) {
-            case 0: r = 1; g = f; b = 0; break;
-            case 1: r = q; g = 1; b = 0; break;
-            case 2: r = 0; g = 1; b = f; break;
-            case 3: r = 0; g = q; b = 1; break;
-            case 4: r = f; g = 0; b = 1; break;
-            case 5: r = 1; g = 0; b = q; break;
-        }
-
-        var c = "#" + ("00" + (~ ~(r * 255)).toString(16)).slice(-2) + ("00" + (~ ~(g * 255)).toString(16)).slice(-2) + ("00" + (~ ~(b * 255)).toString(16)).slice(-2);
-        return (c);
-    }
 
     // This is the function responsible for all the interaction between
     // the user and the DEF.
     function drawDEF() {
-        var w = defJSON.die.x2 - defJSON.die.x1;
+        var dieWidth = defJSON.die.x2 - defJSON.die.x1;
         var h = defJSON.die.y2 - defJSON.die.y1;
-        var wS = 1 * 800 / w;
+
+        var wS = 800 / dieWidth;
         var hS = wS;//1*400/h;
-        var xOff = 10 + Math.abs(defJSON.die.x1) * wS;
-        var yOff = 10 + h * hS;
+
+        var xOff = 0 + Math.abs(defJSON.die.x1) * wS;
+        //Check out this sexy mathematical trick
+        var yOff = 0*0 + hS * (h + defJSON.die.y1);
+
+        var outer = 20;
+        var inner = 10;
+        $(paper.rect(1, 1, dieWidth * wS + ((outer + inner) * 2), h * hS + ((outer + inner) * 2)).node).addClass('pdn lmetal1');
+        xOff += outer + 1;
+        yOff += outer + 1;
+
+        $(paper.rect(outer, outer, dieWidth * wS + (inner * 2), h * hS + (inner * 2)).node).addClass('pdn lmetal2');
+        xOff += inner;
+        yOff += inner;
 
         // we first create the die around the cells
         $(paper
-            .rect((defJSON.die.x1 * wS + xOff), yOff - (h * hS + defJSON.die.y1 * hS), w * wS, h * hS)
+            .rect(xOff + (defJSON.die.x1 * wS), yOff - hS * (h + defJSON.die.y1), dieWidth * wS, h * hS)
             .node)
             .addClass("die");
 
         function onClick() {
-            var $this = $(this);
-            $this.toggleClass("highlight");
+            $(this).toggleClass("highlight");
         }
 
         var pinTypes = {};
@@ -202,10 +89,13 @@ $(function () {
 
             $node.click(onClick);
 
-            paper.text(xOff + 4 + pin.x * wS, yOff - 5 - pin.y * hS, pin.name);
+            //paper.text(xOff + 4 + pin.x * wS, yOff - 5 - pin.y * hS, pin.name);
         }
 
         var cellTypes = {};
+
+        var flag = false;
+        var cells = defJSON.cells;
         for (var i = 0; i < defJSON.cells.length; ++i) {
             // type and name of the cell
             var type = defJSON.cells[i].type;
@@ -217,10 +107,33 @@ $(function () {
             var w = lefJSON.cells[type].w;
             var h = lefJSON.cells[type].h;
 
+            var startX = xOff + x * wS;
+            var startY = yOff - hS * (y + h * 100);
+
+            var height = h * hS * 100;
+            var width = w * wS * 100;
+
             // get the jQuery node.
             var $node = $(paper
-                .rect(xOff + x * wS, yOff - y * hS - h * hS * 100, w * wS * 100, h * hS * 100)
+                .rect(startX, startY, width, height)
                 .node);
+
+            if (i === 0 || (x < cells[i - 1].x)) {
+                flag = !flag;
+
+                if (flag) {
+                    $(paper.path('M0,' + startY + 'L' + startX + ',' + startY).node).addClass('pdn lmetal1');
+                    $(paper.path('M' + (outer) + ',' + (startY + height) + 'L' + startX + ',' + (startY + height)).node).addClass('pdn lmetal2');
+                }
+            }
+
+            if (i === (cells.length - 1) || cells[i + 1].x < x) {
+                var endX = (xOff + (defJSON.die.x1 + dieWidth) * wS);
+                if (flag) {
+                    $(paper.path('M' + (startX + width) + ',' + startY + 'L' + (endX+inner+outer) + ',' + startY).node).addClass('pdn lmetal1');
+                    $(paper.path('M' + (startX + width) + ',' + (startY + height) + 'L' + (endX + inner) + ',' + (startY + height)).node).addClass('pdn lmetal2');
+                }
+            }
 
             // we keep track of the unique types this way
             cellTypes[type] = void 0;
@@ -272,7 +185,7 @@ $(function () {
 
         // for each array which contains the names of the pins and cells,
         // we need to add them to the accordion. So we do that now.
-        -function () {
+        -function handleAccordionData() {
             function AddCheckboxesToAccordion(arr, containerName, colorType, fn) {
                 var keys = Object
                     .keys(arr)
@@ -285,7 +198,7 @@ $(function () {
 
                 var names = keys;
                 if (!colorType) colorType = 'fill';
-                if(fn) names = names.map(fn);
+                if (fn) names = names.map(fn);
 
                 keys.forEach(function (key, index) {
                     // we instantiate a new entry for each item, so when
@@ -305,7 +218,7 @@ $(function () {
                     //</div>
                     $("#types #" + containerName)
                         .append($("<div />")
-                        .append( 
+                        .append(
                             // <label><input type="checkbox" value="{key}"></label>
                             $("<label />")
                             .append($('<input />', {
@@ -319,7 +232,7 @@ $(function () {
                                 var $this = $(this);
                                 $("." + $this.val()).toggleClass("highlight", $this.is(":checked"));
                             }))
-                            
+
                             // <span> {key}</span>
                             .append("<span> " + names[index] + "</span>")
                         )
@@ -341,6 +254,8 @@ $(function () {
             // We add the checkboxes in different accordions
             AddCheckboxesToAccordion(cellTypes, "cellsContainer");
             AddCheckboxesToAccordion(pinTypes, "pinsContainer");
+
+            // the nets have different wire names than their class names.
             AddCheckboxesToAccordion(netsTypes, "netsContainer", 'stroke', function (a) { return a.substring(1, a.length); });
         }();
 
@@ -361,7 +276,7 @@ $(function () {
         // we register the event handler of the clear button
         $(document).on("click", "#clearBtn", function () {
             $('#types input[type="checkbox"]:checked').prop("checked", false);
-            $("#canvas_container .hidden").toggleClass("hidden", false);
+            $("#canvas_container .hidden:not('.pdn')").toggleClass("hidden", false);
             $("#canvas_container .highlight").toggleClass("highlight", false);
         });
 
@@ -374,5 +289,120 @@ $(function () {
                 $('.clkTree').toggleClass('highlight', flag);
             };
         }());
+
+        $(document).on('click', '#pdnBtn', function () {
+            var flag = false;
+
+            return function () {
+                flag = !flag;
+                $('.pdn').toggleClass('hidden', flag);
+            };
+        }());
+
+        // initialize all popovers
+        $('[data-toggle="popover"]').popover({
+            container: "body",
+            placement: "auto",
+            html: true
+        });
+
+        // instantiate the color picker, with its 
+        $('.picker').each(function (index, element) {
+            var $this = $(this);
+
+            $this
+                .colorpicker()
+                // event to change CSS on color change.
+                .on("changeColor", function (e) {
+                    $.rule('.highlight.' + $this.data("name"), '#customStyle').css($this.data("ctype"), e.color);
+                })
+                // we set the default value of the colorpicker after creating it
+                // to trigger the "changeColor" event. This sets the correct CSS
+                // fill color, so we can succesfully highlight the items afterwards.
+                .colorpicker('setValue', $this.data("color"));
+        });
+
+        // this is used to toggle the arrow up and down in the accordion
+        $("#accordion").on('hidden.bs.collapse shown.bs.collapse', function (e) {
+            $(e.target)
+                .prev('.panel-heading')
+                .find("i.indicator")
+                .toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
+        });
     }
+
+    -function initEventHandlers() {
+        $('#browseModal').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+
+        $(document).on('change', '#defInput', function () {
+            if ($(this).val()) {
+                $(this)
+                    .parent('span')
+                    .removeClass('btn-default')
+                    .addClass('btn-success');
+
+                $('#submitBtn').removeAttr('disabled');
+            }
+        });
+
+        $(document).on('change', '#lefInput', function () {
+            if ($(this).val()) {
+                $(this).parent('span')
+                    .removeClass('btn-warning')
+                    .addClass('btn-success');
+            }
+        });
+
+        // post change as the page might have refreshed, but the browser
+        // still holds the data that the user previously chose.
+        $('#defInput').change();
+        $('#lefInput').change();
+
+        function loadAll() {
+            // initialize raphael with an initial width and height.
+            paper = Raphael("canvas_container", 500, 500);
+
+            // the main function to draw the DEF on screen.
+            drawDEF();
+
+            // automatically size the bounding box of the SVG
+            paper.fitToSize();
+
+            $('#pdnBtn').click();
+        };
+
+        $(document).on('click', '#submitBtn', function () {
+            var $defInput = $('#defInput');
+            var $lefInput = $('#lefInput');
+
+            if (!$defInput.val())
+                return false;
+
+            Parsers.readFileFromInput($defInput[0], function (data) {
+                defJSON = Parsers.parseDEF(data);
+
+                function init() {
+                    $('#title').html(/^(?:.+\\)*(\S+\.def)/.exec($defInput.val())[1]);
+                    $('#browseModal').modal('hide');
+                    $('#mainContainer').removeClass('hidden');
+                    loadAll();
+                }
+
+                if ($lefInput.val()) {
+                    Parsers.readFileFromInput($lefInput[0], function (data) {
+                        lefJSON = Parsers.parseLEF(data);
+
+                        $('#subtitle').html(/^(?:.+\\)*(\S+\.lef)/.exec($lefInput.val())[1]);
+                        init();
+                    });
+                }
+                else
+                    init();
+            });
+        });
+
+    }();
 });

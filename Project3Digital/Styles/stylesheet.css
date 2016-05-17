@@ -69,6 +69,11 @@
         vertical-align: text-bottom;
     }
 
+
+    #canvas_container {
+        overflow-x: auto;
+    }
+
 #buttons {
     text-align: center;
     width: 100%;
@@ -95,4 +100,8 @@
     stroke-width: 1;
     stroke: blue;
     stroke-dasharray: 3,1;
+}
+
+.pdn {
+    stroke-width: 2;
 }
