@@ -1,10 +1,42 @@
 ﻿/// <reference path="main.js" />
+/// <reference path="extensions.js" />
 
 // Extension to Raphael, to allow auto sizing of the SVG canvas.
 // Use after drawing all your textures.
 Raphael.prototype.fitToSize = function () {
     var bbox = this.canvas.getBBox();
     this.setSize(bbox.x + bbox.width + 1, bbox.y + bbox.height + 1);
+}
+
+// used to form a Rahpael path.
+function PathArguments(...coords) {
+    var args = [];
+
+    this.clear = function () {
+        args.length = 0;
+    };
+
+    this.addPoint = function (x, y) {
+        args.push(args.length === 0 ? 'M' : 'L');
+        args.push(x);
+        args.push(',');
+        args.push(y);
+    };
+
+    this.path = function (paper) {
+        var ret = $(paper.path(this.toString()).node);
+        this.clear();
+
+        return ret;
+    };
+
+    this.toString = function () {
+        return args.join("");
+    };
+
+    for (var i = 0; i < coords.length - 1; i += 2) {
+        this.addPoint(coords[i], coords[i + 1]);
+    }
 }
 
 // from: http://blog.adamcole.ca/2011/11/simple-javascript-rainbow-color.html

@@ -1,7 +1,7 @@
-﻿var Parsers = function () {
+﻿var parsers = function () {
     "use strict";
 
-    var parsers = {};
+    var _this = {};
 
     function parseRegex(regex, content, fn) {
         var ret = regex.exec(content);
@@ -11,7 +11,7 @@
         }
     }
 
-    parsers.readFileFromInput = function (element, callback) {
+    _this.readFileFromInput = function (element, callback) {
         var file = element.files[0];
 
         if (file) {
@@ -29,7 +29,7 @@
         }
     };
 
-    parsers.parseLEF = function (content) {
+    _this.parseLEF = function (content) {
         var retValue = {
             cells: {}
         };
@@ -42,12 +42,12 @@
                 cell.w = +m[0];
                 cell.h = +m[1];
         });
-        }));
+        })) { }
 
         return retValue;
     }
 
-    parsers.parseDEF = function (content) {
+    _this.parseDEF = function (content) {
         var retValue = {
             die: { x1: 0, y1: 0, x2: 0, y2: 0 },
             cells: [],
@@ -137,5 +137,5 @@
         return retValue;
     };
 
-    return parsers;
+    return _this;
 }();
