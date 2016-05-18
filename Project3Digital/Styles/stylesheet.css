@@ -29,6 +29,10 @@
     border: none;
 }
 
+.panel-title > a:hover {
+    text-decoration: none;
+}
+
 .cells, .pins {
     fill: lightgray;
 }
