@@ -86,6 +86,7 @@ $(function () {
             $('#submitBtn').removeAttr('disabled');
         }
     });
+
     $(document).on('change', '#lefInput', function () {
         if ($(this).val()) {
             $(this).parent('span')
@@ -93,6 +94,7 @@ $(function () {
                 .addClass('btn-success');
         }
     });
+
     $(document).on('click', '#submitBtn', function () {
         var $defInput = $('#defInput');
         var $lefInput = $('#lefInput');
@@ -230,103 +232,100 @@ defViewer.drawDEF = function () {
                 $(this).toggleClass("highlight");
             });
 
-        //paper.text(xOff + 4 + pin.x * wS, yOff - 5 - pin.y * hS, pin.name);
+        paper.text(xOff + 4 + pin.x, yOff - 5 - pin.y, pin.name);
     });
 
-    // draw the cells
     defData.cells.forEach(function () {
-        var flag = false;
         var cells = defData.cells;
-
         var args = new PathArguments();
         netsTypes['lmetal1'] = void 0;
         netsTypes['lmetal2'] = void 0;
 
-        return function (cell, i) {
-            // type and name of the cell
-            var type = cell.type;
-            var name = cell.name;
+        return function (row, rowIndex) {
+            row.forEach(function (cell, i) {
+                // type and name of the cell
+                var type = cell.type;
+                var name = cell.name;
 
-            // we keep track of the unique types this way
-            cellTypes[type] = void 0;
+                // we keep track of the unique types this way
+                cellTypes[type] = void 0;
 
-            // coords of the cell
-            var x = (cell.x *= wS);
-            var y = (cell.y *= wS);
-            var w = lefData.cells[type].w * wS;
-            var h = lefData.cells[type].h * wS;
+                // coords of the cell
+                var x = (cell.x *= wS);
+                var y = (cell.y *= wS);
+                var w = lefData.cells[type].w * wS;
+                var h = lefData.cells[type].h * wS;
 
-            var cellHeight = h * 100;
-            var cellWidth = w * 100;
+                var cellHeight = h * 100;
+                var cellWidth = w * 100;
 
-            var startX = xOff + x;
-            var startY = yOff - (y + h * 100);
-            // coords of the cell
+                var startX = xOff + x;
+                var startY = yOff - (y + h * 100);
+                // coords of the cell
 
-            // get the jQuery node.
-            var $node = $(paper
-                .rect(startX, startY, cellWidth, cellHeight)
-                .node);
+                // get the jQuery node.
+                var $node = $(paper
+                    .rect(startX, startY, cellWidth, cellHeight)
+                    .node);
 
-            // we alternate between flags, to signal that 
-            if (i === 0 || (x < cells[i - 1].x))
-                flag = !flag;
+                // this is the top line (metal1), it is only displayed when
+                // we have an even row number. (the outer connection).
+                if (rowIndex % 2 === 0) {
+                    if (i === 0) {
+                        args.addPoint(0, startY);
+                        args.addPoint(startX, startY);
+                        args.path(paper).addClass('pdn lmetal1');
+                    }
+                    else if (i === row.length - 1) {
+                        var endX = (xOff + defData.die.x1 + dieWidth);
 
-            +function drawOuterLine() {
-                var _yOffset = (flag ? cellHeight : 0);
-
-                if (i === 0 || (x < cells[i - 1].x)) {
-                    args.addPoint(0, startY + _yOffset);
-                    args.addPoint(startX, startY + _yOffset);
-                    args.path(paper).addClass('pdn lmetal1');
+                        args.addPoint((startX + cellWidth), startY);
+                        args.addPoint((endX + inner + outer), startY);
+                        args.path(paper).addClass('pdn lmetal1');
+                    }
                 }
-                else if (i === (cells.length - 1) || cells[i + 1].x < x) {
-                    var endX = (xOff + defData.die.x1 + dieWidth);
 
-                    args.addPoint((startX + cellWidth), startY + _yOffset);
-                    args.addPoint((endX + inner + outer), startY + _yOffset);
-                    args.path(paper).addClass('pdn lmetal1');
+                // if we are drawing the last row, we would like to add that extra bottom line
+                // otherwise, we just display the top line for that row (the inner connection).
+                if (rowIndex === (cells.length - 1) || rowIndex % 2 !== 0) {
+                    var curY = startY + ((rowIndex === (cells.length - 1)) ? cellHeight : 0);
+
+                    if (i === 0) {
+                        args.addPoint(outer, curY);
+                        args.addPoint(startX, curY);
+                        args.path(paper).addClass('pdn lmetal2');
+                    }
+                    else if (i === row.length - 1) {
+                        var endX = (xOff + defData.die.x1 + dieWidth);
+
+                        args.addPoint(startX + cellWidth, curY);
+                        args.addPoint(endX + inner, curY);
+                        args.path(paper).addClass('pdn lmetal2');
+                    }
                 }
-            }();
 
-            +function drawInnerLine() {
-                var _yOffset = (flag ? 0 : cellHeight);
+                // for each cell, we add its type as its class, so we can then
+                // select it later easily. For example, if several cells have a type
+                // of "INVX1", we can simply select all 1-input inverters with
+                // a css selector like ".INVX1".
+                $node
+                    // just adding the class as explained above.
+                    .addClass(type)
+                    .addClass("cells")
 
-                if (i === 0 || (x < cells[i - 1].x)) {
-                    args.addPoint(outer, startY + _yOffset);
-                    args.addPoint(startX, startY + _yOffset);
-                    args.path(paper).addClass('pdn lmetal2');
-                }
-                else if (i === (cells.length - 1) || cells[i + 1].x < x) {
-                    var endX = (xOff + defData.die.x1 + dieWidth);
+                    // attributes related to the popover.
+                    .attr("type", "button")
+                    .attr("tabindex", "0")
+                    .attr("data-toggle", "popover")
+                    .attr("data-trigger", "hover")
+                    .attr("data-content", "Type: " + type + "<br/>Name: " + name)
 
-                    args.addPoint(startX + cellWidth, startY + _yOffset);
-                    args.addPoint(endX + inner, startY + _yOffset);
-                    args.path(paper).addClass('pdn lmetal2');
-                }
-            }();
-
-            // for each cell, we add its type as its class, so we can then
-            // select it later easily. For example, if several cells have a type
-            // of "INVX1", we can simply select all 1-input inverters with
-            // a css selector like ".INVX1".
-            $node
-                // just adding the class as explained above.
-                .addClass(type)
-                .addClass("cells")
-
-                // attributes related to the popover.
-                .attr("type", "button")
-                .attr("tabindex", "0")
-                .attr("data-toggle", "popover")
-                .attr("data-trigger", "hover")
-                .attr("data-content", "Type: " + type + "<br/>Name: " + name)
-
-                // clicking on the button highlights it once, then clicking
-                // again takes off the highlighting. 
-                .click(function () {
-                    $(this).toggleClass("highlight");
-                });
+                    // clicking on the button highlights it once, then clicking
+                    // again takes off the highlighting. 
+                    .click(function () {
+                        $(this).toggleClass("highlight");
+                    });
+            });
         }
     }());
 
@@ -498,4 +497,6 @@ defViewer.drawDEF = function () {
             $('.pdn').toggleClass('hidden', flag);
         };
     }());
-}
+
+    $('#clkTreeBtn').toggleClass('hidden', !$('.clkTree').length);
+};

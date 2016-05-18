@@ -64,11 +64,25 @@
         // COMPONENTS
         parseRegex(/COMPONENTS.+;((?:\r?\n|.)+)END COMPONENTS/gm, content, function (matches) {
             var cells = retValue.cells;
+            var data = {};
 
+            var stop = false;
             var component = /\-\s+(\S+)\s+(\S+)[^\(]+\(\s+(\S+)\s+(\S+)/g;
-            while (parseRegex(component, matches[0], function (m) {
-                cells.push({ name: m[0], type: m[1], x: +m[2], y: +m[3] });
-            }));
+            for (; !stop;) {
+                stop = !parseRegex(component, matches[0], function (m) {
+                    var cell = { name: m[0], type: m[1], x: +m[2], y: +m[3] };
+
+                    (data[cell.y] = (data[cell.y] || [])).push(cell);
+                });
+            }
+
+            // sort descendingly; biggest y value is actually smallest
+            // on drawing. (mirrored).
+            Object.keys(data).sort(function (a, b) {
+                return (+b - +a);
+            }).forEach(function (val) {
+                cells.push(data[val]);
+            });
         });
         // COMPONENTS
 
