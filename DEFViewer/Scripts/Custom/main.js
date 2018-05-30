@@ -150,6 +150,7 @@ defViewer.drawDEF = function () {
 
     // the Raphael canvas variable
     var paper = defViewer.canvas;
+	var zpd = new RaphaelZPD(paper, { zoom: true, pan: true, drag: false });
     var defData = defViewer.defData;
     var lefData = defViewer.lefData;
     // the width and height of the die
